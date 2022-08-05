@@ -1,0 +1,36 @@
+# create account with access to k8s objects
+# kubectl apply -f 000_cluster_roles.yaml
+
+# create account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: usw-log-collector
+
+---
+# create role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: usw-log-collector
+  namespace: kube-system
+rules:
+- apiGroups: [""]
+  resources: ["pods", "namespaces"]
+  verbs: ["get", "list", "watch"]
+
+---
+# bind account to role
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: nxlog
+roleRef:
+  kind: ClusterRole
+  name: usw-log-collector
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: usw-log-collector
+  namespace: kube-system
+
